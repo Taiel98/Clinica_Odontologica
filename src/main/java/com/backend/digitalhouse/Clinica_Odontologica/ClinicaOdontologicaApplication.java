@@ -18,7 +18,7 @@ public class ClinicaOdontologicaApplication {
 	public static void main(String[] args) {
 
 		SpringApplication.run(ClinicaOdontologicaApplication.class, args);
-		LOGGER.info("La aplicación está corriendo (^~^) ¬(°o°)/");
+		LOGGER.info("La aplicación está corriendo en el puerto 8081  (^~^)");
 	}
 
 	@Bean

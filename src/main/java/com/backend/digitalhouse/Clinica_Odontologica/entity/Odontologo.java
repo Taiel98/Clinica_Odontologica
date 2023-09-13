@@ -1,11 +1,15 @@
 package com.backend.digitalhouse.Clinica_Odontologica.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
-
+@Entity
+@Table(name = "ODONTOLOGOS", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"matricula"})
+})
 public class Odontologo {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Integer matricula;
     private String nombre;

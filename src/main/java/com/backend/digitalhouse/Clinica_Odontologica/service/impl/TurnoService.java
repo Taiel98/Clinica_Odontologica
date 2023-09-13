@@ -8,14 +8,13 @@ import com.backend.digitalhouse.Clinica_Odontologica.dto.salida.turno.Odontologo
 import com.backend.digitalhouse.Clinica_Odontologica.dto.salida.turno.PacienteTurnoSalidaDto;
 import com.backend.digitalhouse.Clinica_Odontologica.dto.salida.turno.TurnoSalidaDto;
 import com.backend.digitalhouse.Clinica_Odontologica.entity.Odontologo;
+import com.backend.digitalhouse.Clinica_Odontologica.entity.Paciente;
 import com.backend.digitalhouse.Clinica_Odontologica.entity.Turno;
 import com.backend.digitalhouse.Clinica_Odontologica.exceptions.BadRequestException;
 import com.backend.digitalhouse.Clinica_Odontologica.exceptions.ResourceNotFoundException;
 import com.backend.digitalhouse.Clinica_Odontologica.repository.TurnoRepository;
 import com.backend.digitalhouse.Clinica_Odontologica.service.ITurnoService;
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;

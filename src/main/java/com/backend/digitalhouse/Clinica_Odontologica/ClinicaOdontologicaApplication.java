@@ -1,6 +1,5 @@
 package com.backend.digitalhouse.Clinica_Odontologica;
 
-import com.backend.digitalhouse.Clinica_Odontologica.dao.H2Connection;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +18,7 @@ public class ClinicaOdontologicaApplication {
 	public static void main(String[] args) {
 
 		SpringApplication.run(ClinicaOdontologicaApplication.class, args);
-		LOGGER.info("La aplicación está corriendo :D");
+		LOGGER.info("La aplicación está corriendo (^~^) ¬(°o°)/");
 	}
 
 	@Bean

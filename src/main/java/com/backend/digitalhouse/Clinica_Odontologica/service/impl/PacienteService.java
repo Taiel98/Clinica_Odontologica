@@ -1,10 +1,11 @@
 package com.backend.digitalhouse.Clinica_Odontologica.service.impl;
 
-import com.backend.digitalhouse.Clinica_Odontologica.dao.IDao;
 import com.backend.digitalhouse.Clinica_Odontologica.dto.entrada.modificacion.PacienteModificacionEntradaDto;
 import com.backend.digitalhouse.Clinica_Odontologica.dto.entrada.paciente.PacienteEntradaDto;
 import com.backend.digitalhouse.Clinica_Odontologica.dto.salida.paciente.PacienteSalidaDto;
 import com.backend.digitalhouse.Clinica_Odontologica.entity.Paciente;
+import com.backend.digitalhouse.Clinica_Odontologica.exceptions.ResourceNotFoundException;
+import com.backend.digitalhouse.Clinica_Odontologica.repository.PacienteRepository;
 import com.backend.digitalhouse.Clinica_Odontologica.service.IPacienteService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -14,65 +15,63 @@ import java.util.List;
 @Service
 public class PacienteService implements IPacienteService{
 
-    private final IDao<Paciente> pacienteIDao;
+    private final PacienteRepository pacienteRepository;
     private final ModelMapper modelMapper;
 
-    public PacienteService(IDao<Paciente> pacienteIDao, ModelMapper modelMapper) {
-        this.pacienteIDao = pacienteIDao;
+    public PacienteService(PacienteRepository pacienteRepository, ModelMapper modelMapper) {
+        this.pacienteRepository = pacienteRepository;
         this.modelMapper = modelMapper;
         configureMapping();
     }
 
-    /*public Paciente registrarPaciente(Paciente paciente) {
-        return pacienteIDao.registrar(paciente);
-    }
-
-    public Paciente buscarPacientePorId(int id) {
-        return pacienteIDao.buscarPorID(id);
-    }
-
-    public List<Paciente> listarPacientes() {
-    return pacienteIDao.listarTodos();
-    }
-
-    public void eliminarPaciente(int id) {
-        pacienteIDao.eliminar(id);
-    }*/
-
     @Override
     public List<PacienteSalidaDto> listarPacinetes() {
-        List<Paciente> pacientes = pacienteIDao.listarTodos();
-
-        return pacientes.stream().map(this::entidadADtoSalida).toList();
+        List<PacienteSalidaDto> pacientes = pacienteRepository.findAll().stream()
+                .map(this::entidadADtoSalida).toList();
+        return pacientes;
     }
 
     @Override
     public PacienteSalidaDto registrarPaciente(PacienteEntradaDto paciente) {
-        Paciente pacienteRecibido = dtoEntradaAEntidad(paciente);
-        Paciente pacienteRegistrado = pacienteIDao.registrar(pacienteRecibido);
-
-        return entidadADtoSalida(pacienteRegistrado);
+        Paciente pacGuardado = pacienteRepository.save(dtoEntradaAEntidad(paciente));
+        PacienteSalidaDto pacienteSalidaDto = entidadADtoSalida(pacGuardado);
+        return pacienteSalidaDto;
     }
 
     @Override
     public PacienteSalidaDto buscarPacientePorId(Long id) {
-        return entidadADtoSalida(pacienteIDao.buscarPorID(id));
-    }
+        Paciente pacienteBuscado = pacienteRepository.findById(id).orElse(null);
 
-    @Override
-    public void eliminarPaciente(Long id) {
-        pacienteIDao.eliminar(id);
-    }
-
-    @Override
-    public PacienteSalidaDto modificarPaciente(PacienteModificacionEntradaDto pacienteModificado) {
         PacienteSalidaDto pacienteSalidaDto = null;
-        Paciente pacienteAModificar = pacienteIDao.buscarPorID(pacienteModificado.getId());
-
-        if(pacienteAModificar != null){
-            pacienteAModificar = dtoModificadoAEntidad(pacienteModificado);
-            pacienteSalidaDto = entidadADtoSalida(pacienteIDao.modificar(pacienteAModificar));
+        if (pacienteBuscado != null) {
+            pacienteSalidaDto = entidadADtoSalida(pacienteBuscado);
         }
+        return pacienteSalidaDto;
+    }
+
+    @Override
+    public void eliminarPaciente(Long id) throws ResourceNotFoundException {
+        if (buscarPacientePorId(id) != null) {
+            pacienteRepository.deleteById(id);
+        } else {
+            throw new ResourceNotFoundException("No se ha encontrado el paciente con id " + id);
+        }
+    }
+
+    @Override
+    public PacienteSalidaDto modificarPaciente(PacienteModificacionEntradaDto pacienteModificado) throws ResourceNotFoundException {
+        Paciente pacienteRecibido = dtoModificadoAEntidad(pacienteModificado);
+        Paciente pacienteAActualizar = pacienteRepository.findById(pacienteModificado.getId()).orElse(null);
+        PacienteSalidaDto pacienteSalidaDto = null;
+        if (pacienteAActualizar != null) {
+            pacienteAActualizar = pacienteRecibido;
+            pacienteRepository.save(pacienteAActualizar);
+            pacienteSalidaDto = entidadADtoSalida(pacienteAActualizar);
+        } else {
+            throw new ResourceNotFoundException("No fue posible actualizar los datos ya que el paciente no se encuentra registrado");
+        }
+
+
         return pacienteSalidaDto;
     }
 
